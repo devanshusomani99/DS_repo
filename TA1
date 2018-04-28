@@ -1,0 +1,682 @@
+\documentclass{article}
+\usepackage{enumitem}
+\usepackage{nopageno}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+\usepackage{amsmath}
+\usepackage[a4paper, portrait, margin=.5in]{geometry}
+\usepackage{fancyvrb}
+\usepackage{bera}
+
+\usepackage{listings}% http://ctan.org/pkg/listings
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
+
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,positioning}
+\tikzset{
+    >=stealth,
+    %auto,
+    %node distance=3.5cm,
+    font=\scriptsize,
+    possible world/.style={circle,draw,thick,align=center},
+    real world/.style={double,circle,draw,thick,align=center},
+    minimum size=40pt
+}
+
+\title{Theoretical Assignment 1 - ESO207A}
+\author{Devanshu Somani}
+\date{January 2018}
+
+\begin{document}
+    \maketitle
+
+    \begin{enumerate}[label={\Large\textbf{\arabic*.}}]
+        \item{\textbf{\Large{ADT for n-digit natural numbers with operations and exceptions :-}}}
+        \begin{itemize}
+            \item \textbf{Universe :} Set of n-digit integers (Let us denote it by U) with or without leading zeroes, i.e.
+
+            Universe = U = $\{0,.......,99...9(n\ times)\}$ or
+
+            Universe = U = $[0,10^n-1]$
+
+            \item \textbf{Operations :}
+            \begin{enumerate}[label=\textbf{\alph*.}]
+                \item \textbf{Constant :} It is the basic constant integer operation.
+
+                If it is denoted by the name constant, then we can say that :
+
+                constant : $\,\to\,$ U
+
+                \item \textbf{Addition :} It is a function from U$\times$U to U. Let us denote it by add. Therefore, it can be said that :
+
+                add : U$\times$U $\,\to\,$ U
+
+                It is defined as add(x,y) = add(y,x) = x+y \hfill where + is the integer addition function and x,y$\in$U
+
+                Let x,y$\in$U and be stored as arrays. And collectively, all elements of the array will represents the number in its decimal form.(array index starts from zero)
+
+                Thus x = $ \sum_{i=0}^n 10^i $ x[i]
+                and similarly y = $ \sum_{i=0}^n 10^i $ y[i].
+
+                Now, add(x,y) would have a pseudo code like :
+
+                \begin{verbatim}
+                int[] add(int x[], int y[]){
+                    i=0
+                    while(i<n){
+                        carry=0
+                        sum[i] = (x[i] + y[i] + carry)/10
+                        carry = (x[i] + y[i] + carry)%10
+                        i=i+1
+                    }
+                    if(carry!=0){
+                        sum[n]=carry
+                    }
+                    return sum
+                }
+                \end{verbatim}
+
+                Here, each digit of x and y are being added with an additional carry which is being regularly updated as we move from the least significant bits(0 index) of x and y to their most significant bits(n-1 index), thus storing the result in another array named sum and finally adding the carry to its final element if the final carry is non-zero and then returning the final sum.
+
+                \item \textbf{Successor :} It is the successor function, i.e, it will return the element(n-digit integer) right next to(or one greater than) the input element. Let us denote it by succ.
+
+                succ : U $\,\to\,$ U
+
+                Mathematically, it is function that adds 1 to the number.
+
+                succ(x) = add(x,1) \hspace{20pt} or \hspace{20pt} succ(x) = x+1 \hfill where + is the integer addition function and x$\in$U
+
+                Its pseudo code would be same as add but here instead of y, we will have a constant 1, i.e.
+
+                \begin{verbatim}
+                int[] succ(int x[]){
+                    y[0] = 1
+                    i=1
+                    while(i<n){
+                        y[i]=0
+                        i = i+1
+                    }
+                return add(x,y)
+                }
+                \end{verbatim}
+
+                This code simply adds 1 with x to obtain succ(x).
+
+                \item \textbf{Subtraction :} It is a function from U$\times$U to U and let us denote it using sub. Therefore
+
+                sub : U$\times$U $\,\to\,$ U
+
+                Mathematically, given x,y$\in$U :
+
+                sub(x,y) = -sub(y,x) = x-y \hfill where - is the integer subtraction function.
+
+                Consider x,y$\in$U which are stored as arrays just as above.
+
+                Then the pseudo code for subtraction would be like :
+
+                \begin{verbatim}
+                int[] sub(int x[], int y[]){
+                    i=0
+                    while(i<n){
+                        diff[i] = (x[i] - y[i])/10
+                        if(diff[i]<0){
+                            diff[i] = diff[i] + 10
+                            a[i+1] = a[i+1] - 1
+                        }
+                        i=i+1
+                    }
+                    return diff
+                }
+                \end{verbatim}
+
+                This pseudo code stores the difference between each of the digits of x and y in the array diff starting from their least significant bit(index 0) to their most significant bit(index n-1). And in process if the difference comes out to be negative, 1 is borrowed as 10 from the digit on its left(in x) and the process is continued again. Finally, when all the digits are processed diff is returned.
+
+                \item \textbf{Multiplication :} It is a function from U$\times$U to U and let us denote it using mul. Therefore
+
+                mul : U$\times$U $\,\to\,$ U
+
+                Mathematically, given x,y$\in$U :
+
+                mul(x,y) = mul(y,x) = x$\times$y \hfill where $\times$ is the integer multiplication function.
+
+                Consider x,y$\in$U which are stored as arrays just as above.
+
+                Then the pseudo code for multiplication would be like :
+
+                \begin{verbatim}
+                int[] mul(int x[], int y[]){
+                    i=0
+                    product = {0}
+                    while(i<n){
+                        carry=0
+                        j=0
+                        while(j<i){
+                            line_product[j]=0
+                        }
+                        while(j<n){
+                            line_product[j] = (x[i]*y[j] + carry)/10
+                            carry = (x[i]*y[j] + carry)%10
+                            j=j+1
+                        }
+                        product = add(product,line_product)
+                        i=i+1
+                    }
+                    return product
+                }
+                \end{verbatim}
+
+                This pseudo code first multiplies the least significant digit(index 0) of x to each digit of y while updating carry each time. Then, the resulting array is stored in line\_product and is added to an array named product which is initially declared as zero.
+
+                Then, the same process is repeated with the second digit of x but with initially declaring the first element on line\_product to be zero (representing the 10's place).Then the same is repeated with the third element of x and 2 initial elements of line\_product declared as zero (representing the 100's place). This process is repeated until each digit of x is multiplied with and stored in product with proper zero declaration in line\_product.
+
+                Finally, after repeatedly adding line\_product to product to keep the product updated. And at last, product is returned by the mul function.
+
+                \item \textbf{Comparison :} It is a function from U$\times$U to U that returns the larger of its inputs and let us denote it using comp. Therefore
+
+                comp : U$\times$U $\,\to\,$ U
+
+                Mathematically, given x,y$\in$U :
+
+                \[
+  comp(x,y) = \left\{
+     \begin{array}{@{}l@{\thinspace}l}
+       \text{x} \hspace{20pt} & \text{if   x}>\text{y}\\
+       \text{y} \hspace{20pt} & \text{else} \\
+     \end{array}
+   \right.
+\]
+
+                Consider x,y$\in$U which are stored as arrays just as above.
+
+                Then the pseudo code for comparison would be like :
+
+                \begin{verbatim}
+                int[] comp(int x[], int y[]){
+                    i=n-1
+                    while(i>=0){
+                        if(x[i]>y[i]){
+                            return x
+                        }
+                        else if(x[i]<y[i]){
+                            return y
+                        }
+                        else{
+                            i=i-1
+                        }
+                    }
+                    return x
+                }
+                \end{verbatim}
+
+
+                \item \textbf{Division :} It is a function from U$\times$U to U and let us denote it using div. Therefore
+
+                div : U$\times$U $\,\to\,$ U
+
+                Mathematically, given x,y$\in$U :
+
+                div(x,y) = x$\div$y \hfill where $\div$ is the integer division function.
+
+                Consider x,y$\in$U which are stored as arrays just as above.
+
+                Then the pseudo code for division would be like :
+
+                \begin{lstlisting}
+                int[] div(int x[], int y[]){
+                    quo = {0}
+                    while(x>y){
+                        i=0
+                        while(x>=$10^i\times$y){
+                            i = i+1
+                        }
+                        p=i-1
+                        quo = add(quo,{$10^p$})
+                        x = sub(x,y)
+                    }
+                    return quo
+                }
+                \end{lstlisting}
+
+            \end{enumerate}
+
+            This piece of pseudo code keeps on increasing y(i.e, the divisor) by multiplying it with $10^i$ and keeps on increasing i until it is not more than x(i.e the dividend) (this can be checked using the comparison function defined above). And then decreases i so that x-$10^i\times$y is just positive. And then it updates x with this positive number.
+
+            The value of $10^i$ each time is recorded and added to a already zero defined array named quo which stores the quotient.
+
+            This process is repeated until the dividend becomes smaller than the divisor and finally, the array quo is returned as the quotient.
+
+            \item \textbf{Exceptions :}
+            \begin{enumerate}
+                \item \textbf{Overflow :} There are various cases in which some operation on elements of U leads converts it into some number which is not in U. This is explained with examples as follows :
+
+                \begin{enumerate}
+                \item \textbf{Addition overflow :}
+
+                For some x,y$\in$U, it is possible that add(x,y)$\notin$U
+
+                For example, x=$10^n$-1 and y=$10^{n-1}$ are such that x,y$\in$U but add(x,y)=11$\times10^{n-1}$-1$\notin$U $\,\forall n\in \mathbb{N}$
+
+                \item \textbf{Successor overflow :}
+
+                Just as addition overflow, successor overflow will also occur if x=$10^{n}-1\in$U succ(x)=$10^n\notin$U
+
+                \item \textbf{Subtraction overflow :}
+
+                For x$\ne$y$\in$U, if comp(x,y)=y (i.e y>x), then sub(x,y) will output a negative integer which is not in U.
+
+                Example :- Let x=9 and y=11
+
+                sub(x,y)=-2 and -2$\notin$U
+
+                \item \textbf{Multiplication overflow :}
+
+                Again, for some sufficiently large x,y$\in$U, mul(x,y) can become greater than $10^n$-1, which is not in U.
+
+                For Example :- x=$10^n$-1 and y=2
+
+                mul(x,y)=2$\times10^n$-2=$10^n$+($10^n$-2)$\geq10^n$ \hspace{10pt} Therefore, mul(x,y)$\notin$U
+
+                \end{enumerate}
+                \item \textbf{Division by zero :}
+
+                For any x$\in$U, div(x,0) is undefined.
+            \end{enumerate}
+
+
+        \end{itemize}
+
+        \item \textbf{\Large{ADT for queues and sequences}}
+
+        \begin{itemize}
+            \item \textbf{ADT for Queues}
+
+            A queue is basically an ordered list of data which can be accessed through only two points - its head and its tail. If data is to be removed, it can be removed only from its head. And if data is to be added, it can only be added after its tail.
+            \begin{enumerate}[label=\textbf{\alph*.}]
+                \item \textbf{Universe :}
+
+                The Universe of queues will be a set of all possible ordered lists containing any type of data (integers, strings, structures etc.) with only two access points - a tail and a head.
+
+                \item \textbf{Operations :}
+
+                \begin{enumerate}
+                    \item \textbf{Enqueue(data) :}
+
+                    Enqueue means appending data at the tail of the queue. We get some input data and we have to create a memory which will store that data behind(or to right of) the tail and then update the tail to point to this data.
+
+                    If we use linked lists based on a structure which has a data entry and two pointers one pointing to the element on its left(denoted by left) and the other pointing to the element on its right(denoted by right) along with passing the head and tail pointers, the pseudo code of enqueue would look like :
+
+                    \begin{verbatim}
+                        node* new
+                        new->data = input_data
+                        new->right = NULL
+                        if(queue is not empty){
+                            tail->right = new
+                            new->left = tail
+                        }
+                        else{
+                            new->left = NULL
+                            head = new
+                        }
+                        tail = new
+                    \end{verbatim}
+
+                    The above pseudo code will create a new node in linked list(queue) and will make it the last element in the queue by updating the tail to point at the newly created element, if the queue is non-empty.
+
+                    If the queue is empty, then it will just create a new node to which both the head and tail would be pointing.
+
+                    \item \textbf{Dequeue :}
+
+                    Dequeue means deleting data from the head of the queue. We have to free the memory allocated to the queue's first element and update the head to point at the next element.
+
+                    If we use linked lists based on a structure same as described above along with passing the head and tail pointers, the pseudo code of dequeue would look like :
+
+                    \begin{verbatim}
+                        if(queue is not empty){
+                            node* delete_this = head->right->left
+                            head->right->left = NULL
+                            head = head->right
+                            free(delete_this)
+                        }
+                    \end{verbatim}
+
+                    The above pseudo code will work subject to condition that there is something to free, i.e if the queue is not empty.
+
+                    It will first create a pointer to the node to be deleted will cut its connections with the element on the right and then with the head and then finally will free the memory. Also, the head is updated to point to the new first element in the queue before freeing.
+
+                    \item \textbf{Is\_Empty :}
+
+                    This is a function that will take the queue as input (i.e its head and tail) and will output whether the queue is empty or not.
+
+                    The pseudo code works on the fact that given a well defined (non empty) queue, its head and tail always point to an element.
+
+                    \begin{verbatim}
+                        if(head==NULL and tail==NULL){
+                            return Empty
+                        }
+                        else{
+                            return Not_Empty
+                        }
+                    \end{verbatim}
+
+                    This simple pseudo code will return Empty if the queue is empty and Not\_Empty is its not empty.
+
+                    Here, Empty and Not\_Empty can be anything defined by the user, for example :- they can be integers 1 and -1 respectively.
+                \end{enumerate}
+                \item \textbf{Exceptions :}
+
+                There is only possible exception in queues defined like this and that is dequeueing an empty queue.
+
+                As defined in dequeue operation, the pseudo code started from the if condition that the queue should not be empty. Its obvious that one cannot remove or delete an element from a queue which is already empty.
+
+                Therefore, dequeueing an empty queue is an exception.
+            \end{enumerate}
+
+            \item \textbf{ADT for sequences}
+
+            A sequence is just and ordered set of data. There are many kinds of sequences but I am considering the sequence of queues which is basically a sequence of double linked lists.
+
+            \begin{enumerate}[label=\textbf{\alph*.}]
+                \item \textbf{Universe :}
+
+                The Universe of sequences of queues will be a set of any number of possible ordered lists, which are sequenced in a particular order and can contain any type of data (integers, strings, structures etc.) with only two access points - a tail and a head for each of the queue in the sequence.
+
+                \item \textbf{Operations :}
+
+                \begin{enumerate}
+                    \item \textbf{Enqueue(data, index) :}
+
+                    Here, the function is almost the same as the one defined in case of queues, the only difference being that here we need to add the element to the tail of a particular queue only, while leaving the rest of the queues in the sequence unaffected.
+
+                    If we use a set of linked lists with each linked list having properties defined above and have indexing starting from 0 and we have a set of heads and tails to each of the queues, then the pseudo code of this function would look like :
+
+                    \begin{verbatim}
+                        node* new
+                        new->data = input_data
+                        new->right = NULL
+                        if(queue is not empty){
+                            tail[index]->right = new
+                            new->left = tail[index]
+                        }
+                        else{
+                            new->left = NULL
+                            head[index] = new
+                        }
+                        tail[index] = new
+                    \end{verbatim}
+
+                    The above pseudo code will create a new node in the index\textsuperscript{th} linked list(queue) and will make it the last element in it by updating the tail[index] to point at the newly created element, if that queue is non-empty.
+
+                    If that queue is empty, then it will just create a new node to which both the head[index] and tail[index] would be pointing.
+
+
+                    \item \textbf{Dequeue(index) :}
+
+                    Dequeue means deleting data from the head of the queue. This is again similar to the dequeue function created above. The only difference is that the element should be deleted only from the queue whose index is specified.
+
+                    If we use linked lists based on a structure same as described above along with passing the head[index] and tail[index] pointers, the pseudo code of dequeue would look like :
+
+                    \begin{verbatim}
+                        if(queue[index] is not empty){
+                            node* delete_this = head[index]->right->left
+                            head[index]->right->left = NULL
+                            head[index] = head[index]->right
+                            free(delete_this)
+                        }
+                    \end{verbatim}
+
+                    The above pseudo code will work subject to condition that there is something to free, i.e if the queue[index] is not empty.
+
+                    It will first create a pointer to the node to be deleted will cut its connections with the element on the right and then with its head and then finally will free the memory. Also, this head[index] is updated to point to the new first element in the queue[index] before freeing.
+
+                    \item \textbf{Is\_Empty(index) :}
+
+                    This is a function that will take the indexed queue as input (i.e its head and tail) and will output whether it is empty or not.
+
+                    The pseudo code works on the fact that given a well defined (non empty) queue, its head and tail always point to an element.
+
+                    \begin{verbatim}
+                        if(head[index]==NULL and tail[index]==NULL){
+                            return Empty
+                        }
+                        else{
+                            return Not_Empty
+                        }
+                    \end{verbatim}
+
+                    This simple pseudo code will return Empty if the indexed queue is empty and Not\_Empty is its not empty.
+
+                    Here, Empty and Not\_Empty can be anything defined by the user, for example :- they can be integers 1 and -1 respectively.
+
+
+                \end{enumerate}
+
+                \item \textbf{Exceptions :}
+
+                \begin{itemize}
+                    \item \textbf{Dequeueing and already empty queue :}
+
+                    As defined in dequeue[index] operation, the pseudo code started from the if condition that the indexed queue should not be empty. Its obvious that one cannot remove or delete an element from a queue which is already empty.
+
+                    Therefore, dequeueing an empty queue is an exception.
+
+                    \item \textbf{Index out of bound :}
+
+                    It must be specified in the beginning that what is the length of the sequence, i.e., how many queues does the sequence contain?
+
+                    If an index is provided in any of the three operations and it is greater than(index$\geq$length of sequence) the number of queues, then the program would not compile and will throw an error.
+                \end{itemize}
+
+
+
+
+            \end{enumerate}
+        \end{itemize}
+
+        \item \textbf{\Large{RAM program for computing \boldmath$n^k$ by squaring each time}}
+
+        An input of n and k is given at first and the RAM program will process it and output $n^k$.
+
+        The algorithm that it will use will work by squaring n each time. The basis of the algorithm is :
+        \begin{center}
+            \[
+  $x^n$ = \left\{
+     \begin{array}{@{}l@{\thinspace}l}
+       \text{${(x^2)}^{n/2}$} \hspace{20pt} & \text{if   n is even}\\
+       \text{$x\times{(x^2)}^{{n-1}/2}$} \hspace{20pt} & \text{if n is odd} \\
+     \end{array}
+   \right.
+\]
+        \end{center}
+
+        Let there be a memory map c with 5 indices. The first one with index 0, i.e, c(0) would be used for accumulation. And the rest for would be used for reading and writing.
+
+        Now, the code of the RAM machine would be like (the part after // in each line is the comment and is only for understanding the code) :
+
+        \begin{Verbatim}[commandchars=\\\{\},codes={\catcode`$=3\catcode`_=8}]
+            1. \textbf{READ 1} // Input of n is stored in c(1)
+            2. \textbf{READ 2} // Input of k is stored in c(2)
+            3. \textbf{LOAD 2} // Load the value of k from c(2) to c(0) for subsequent analysis
+            4. \textbf{DIV 2} // Divide k by k to get 1
+            5. \textbf{STORE 4} // Store 1 in another index 4 (would be handy afterwards)
+            6. \textbf{LOAD 2} // Load k in c(0) for analysis of the base case
+            7. \textbf{SUB =1} // Subtract 1 from k
+            8. \textbf{JZERO 26} // If the loaded element is zero, then k must had been 1, implying that
+               the processing is over and the base case has been reached
+            9. \textbf{LOAD 2} // Load k for analysis again
+            10. \textbf{DIV =2} // Divide k by 2 and update k
+            11. \textbf{MUL =2} // Multiply k by 2 again and update it
+            12. \textbf{STORE 3 // Store the value of updated k in c(3).
+            13. \textbf{LOAD 2} // Load the original k again
+            14. \textbf{SUB 3} // Equivalent to c(0) = c(0) - C(3)
+            // This was done deliberately to create a distinction between even and odd k.
+            // If k was even, then k/2 would be exactly its half and multiplying it by 2 again
+               would result in the formation of the same number
+            // If k was odd, then k/2 would be 0.5 less than its half(as it only stores integers)
+               and then multiplying it by 2 would give us k-1
+            // Thus, on subtracting this updated number (which is k or k-1) from k would give us
+               two possibilities on which we could work on
+            15. \textbf{JZERO 19} // Executing the if condition of k being even or not
+            // If k is even, then it would be 0 and thus the code would be redirected to
+            // If k was odd, then it won't be zero and the following code would run
+            16. \textbf{LOAD 4} // The index 4 has come to use
+            17. \textbf{MUL 1} // Multiply the index at 4(which was initially 1) with the updated n
+            18. \textbf{STORE 4} // Update the element at index 4 after multiplying it with n
+            19. \textbf{LOAD 1} // Load the updated n
+            20. \textbf{MUL 1} // Square the n
+            21. \textbf{STORE 1 // Store n^2 at index 1
+            22. \textbf{LOAD 2} // Load the updated k in c(0)
+            23. \textbf{DIV =2} // Half the odd number k
+            24. \textbf{STORE 2} // Update k with its "half" value (according to integer rules)
+            25. \textbf{JUMP 6} // Repeat this process again with the updated n and k
+            26. \textbf{LOAD 1} // This is the final value stored in 1
+            27. \textbf{MUL 4} // The purpose of storing 1 at index 4 is done here
+            // It was done deliberately for each of the case when k became odd, its value was
+               updated regularly to adjust that n which comes in the equation (1) described
+               above in its odd case, before the square term
+            28. \textbf{WRITE 1} // Print the final result
+            29. \textbf{HALT} // End the processing
+
+        \end{Verbatim}
+
+
+        \item \textbf{\Large{TM program for doubling of an input consisting of k consecutive 1s}}
+
+        An input of k consecutive 1s will be given and it has to be replaced with 2k consecutive 1s. There will be infinite sequence of blanks (denoted by B) on each side of the k-length string of 1s.
+
+        The TM Program Algorithm is as follows :
+
+        \begin{enumerate}[label=\textbf{\Roman*.}]
+            \item Set the state to q\textsubscript{1} and read the input on the tape. If it is 1, then replace the number on the tape from 1 to 0, set the state to q\textsubscript{2} and move leftward.
+
+            \item Keep on moving leftwards without changing anything if the subsequent inputs are 1.
+
+            \item As soon as the first Blank is encountered, replace the Blank with 1, change the state to q\textsubscript{3} and move right.
+
+            \item Keep on moving rightwards without changing anything if the subsequent inputs are 1.
+
+            \item If the input is not 1, then there are two cases :
+                \begin{itemize}
+                    \item If the input is 0, then replace it to 1, change the state to q\textsubscript{1} and move rightwards. And then Rrpeat the algorithm from step 1.
+
+                    \item If the input is Blank, then Halt.
+                \end{itemize}
+
+            The State Change Diagram of this algorithm can be represented as :
+
+            \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=blue!30]
+
+            \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+
+            \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=green!30]
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+        \begin{tikzpicture}[node distance=2cm]
+
+\node (q1) [process] {\textbf{\Large q\textsubscript{1}}};
+
+\node (q3) [process, right of=q1, xshift=5cm] {\textbf{\Large q\textsubscript{3}}};
+
+\node[above = .2ex of q3,inner sep = 0pt,outer sep=0pt,minimum size=25pt] (q3a) {\textbf{(1/1,R)}};
+
+\node (HALT) [startstop, right of=q3, xshift=4cm] {\textbf{\Large HALT}};
+
+\node (q2) [process, below of=q3, yshift=-3cm] {\textbf{\Large q\textsubscript{2}}};
+
+\node[below = .1ex of q2,inner sep = 0pt,outer sep=0pt,minimum size=25pt] (q2a) {\textbf{(1/1,L)}};
+
+\draw [arrow] (q1) -- node[anchor=east] {\textbf{(1/0,R)}} (q2);
+\draw [arrow] (q2) -- node[anchor=west] {\textbf{(B/1,R)}} (q3);
+\draw [arrow] (q3) -- node[anchor=south] {\textbf{(0/1,R)}} (q1);
+\draw [arrow] (q3) -- node[anchor=south] {\textbf{(B)}} (HALT);
+
+
+\path[]
+    (q2) edge [in=180, out=130,thick] (q2a)
+    (q2a) edge [->,in=50, out=0,thick]  (q2)
+    (q3) edge [in=180, out=230,thick] (q3a)
+    (q3a) edge [->,in=310, out=0,thick]  (q3)
+
+\end{tikzpicture}
+
+        The text on the arrows represent the change in the tape symbol from initial to final and the displacement direction of the Turing Machine. L stands for Left Displacement and R stands for Right Displacement The syntax is :
+
+        \begin{center}
+            \textbf{(Initial Tape symbol/Final Tape symbol , Displacement Direction)}
+        \end{center}
+
+        \\ \vspace{25pt}
+
+        In tabular form :
+        \begin{center}
+            \begin{tabular}{|c|c|c|c|}
+            \hline
+             & \multicolumn{3}{|c|}{\textbf{Tape Symbol before Processing}} \\
+            \hline
+             \textbf{Current State} & \textbf{0} & \textbf{1} & \textbf{B} \\
+             \hline
+             \textbf{q\textsubscript{1}} & - & (0,q\textsubscript{2},L) & - \\
+             \hline
+             \textbf{q\textsubscript{2}} & - & (1,q\textsubscript{2},L) & (1,q\textsubscript{3},R) \\
+             \hline
+             \textbf{q\textsubscript{3}} & (1,q\textsubscript{1},R) & (1,q\textsubscript{3},R) & HALT \\
+             \hline
+        \end{tabular}
+        \end{center}
+
+        The syntax of values inside the brackets is (Displacement Direction rule is same as above) :
+        \begin{center}
+            \textbf{(The tape symbol after processing, Next state, Displacement Direction)}
+        \end{center}
+
+        \\ \vspace{25pt}
+
+        In terms of transitions defined as \textbf{\boldmath$\delta$(q, X) = (p, Y, D)} , where
+        \begin{verbatim}
+                q: current state,
+                X: TM’s RW-head at tape symbol X
+                Y: Output symbol, RW-head erases X and replaces it by Y .
+                p: New state
+                D: could be R or L specifying movement of RW-head
+        \end{verbatim}
+
+        the algorithm of the Turing Machine can be written as :
+
+        \begin{center}
+            \textbf{\boldmath$\delta$(q\textsubscript{1},1) = (q\textsubscript{2},0,L)}
+
+            \textbf{\boldmath$\delta$(q\textsubscript{2},1) = (q\textsubscript{2},1,L)}
+
+            \textbf{\boldmath$\delta$(q\textsubscript{2},B) = (q\textsubscript{3},1,R)}
+
+            \textbf{\boldmath$\delta$(q\textsubscript{3},1) = (q\textsubscript{3},1,R)}
+
+            \textbf{\boldmath$\delta$(q\textsubscript{3},0) = (q\textsubscript{1},1,R)}
+
+            \textbf{\boldmath$\delta$(q\textsubscript{3},B) = (HALT)}
+        \end{center}
+
+        All other state-input combinations will not be encountered and thus they do not need to be defined.
+
+        \end{enumerate}
+    \end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,16 @@
+4 10
+addnode 3
+addnode 1
+addlink 3 1
+addnode 2
+delnode 3
+addnode 4
+addnode 3
+addlink 1 3
+addlink 4 3
+delnode 1
+4
+3
+2
+1
+4

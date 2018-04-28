@@ -1,0 +1,26 @@
+24
+learn a
+learn b
+forgetsmallest
+learn f
+learn k
+forgetsmallest
+learn g
+forgetsmallest
+learn o
+learn m
+learn q
+forgetsmallest
+learn h
+learn c
+forgetsmallest
+learn d
+learn z
+reportsmallest
+forgetsmallest
+learn vb
+learn bv
+forgetsmallest
+forgetsmallest
+reportsmallest
+forgetsmallest
